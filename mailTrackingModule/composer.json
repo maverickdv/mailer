@@ -1,0 +1,59 @@
+{
+    "autoload": {
+        "classmap": [
+            "./"
+        ]
+    },
+
+   "repositories" : [
+   {
+	   "packagist": false
+   },
+
+        {
+            "type": "package",
+            "package": {
+                "name": "yaml",
+                "version":"v1.0.1",
+                "source":{
+                    "url": "http://gitdeployer:gitdeployer@gitlab.infoedge.com/naukrilibs/yaml.git",
+                    "type": "git",
+                    "reference": "refs/tags/v1.0.1"
+                }
+            }
+        },
+	{
+            "type": "package",
+            "package": {
+                "name": "ncYaml",
+                "version":"v3.0.0",
+                "source":{
+                    "url": "http://gitdeployer:gitdeployer@gitlab.infoedge.com/naukrilibs/ncyaml.git",
+                    "type": "git",
+                    "reference": "refs/tags/v3.0.0"
+                }
+            }
+        },
+	{
+            "type": "package",
+            "package": {
+                "name": "Pest",
+                "version":"v1.0.9",
+                "source":{
+                    "url": "http://gitdeployer:gitdeployer@gitlab.infoedge.com/naukrilibs/pest.git",
+                    "type": "git",
+                    "reference": "refs/tags/v1.0.9"
+                }
+            }
+        }
+   ],
+	"config" : {
+		"http-secure": false
+	}
+
+    "require": {
+	"yaml": "v1.0.1",
+	"ncYaml":"v3.0.0",
+        "Pest":"v1.0.9"
+    }
+}

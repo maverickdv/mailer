@@ -1,0 +1,49 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "7896221155766b09c07d9446867d9dd6",
+    "content-hash": "cca9149528b5c44246a1be70f29a38ed",
+    "packages": [
+        {
+            "name": "Pest",
+            "version": "v1.0.9",
+            "source": {
+                "type": "git",
+                "url": "http://gitdeployer:gitdeployer@gitlab.infoedge.com/naukrilibs/pest.git",
+                "reference": "refs/tags/v1.0.9"
+            },
+            "type": "library"
+        },
+        {
+            "name": "ncYaml",
+            "version": "v3.0.0",
+            "source": {
+                "type": "git",
+                "url": "http://gitdeployer:gitdeployer@gitlab.infoedge.com/naukrilibs/ncyaml.git",
+                "reference": "refs/tags/v3.0.0"
+            },
+            "type": "library"
+        },
+        {
+            "name": "yaml",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "http://gitdeployer:gitdeployer@gitlab.infoedge.com/naukrilibs/yaml.git",
+                "reference": "refs/tags/v1.0.1"
+            },
+            "type": "library"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
