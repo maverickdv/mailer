@@ -12,28 +12,23 @@ var linkSchema = new Schema(
 var openStatusSchema = new Schema (
 	{
 		opened : Boolean,
-		sent_time: Date,
+		sent_time: {type: Date, default: Date.now},
 		open_time: Date
-	}
-);
-var mailerSchema = new Schema(
-	{
-		unique_mailer_id : String,
-		mailer_type : String,
-		mailer_id : String,
-		links: [linkSchema],
-		open_status: [openStatusSchema],
-		user_platform: String,
-		user_browser: String,
-		user_location: String
 	}
 );
 
 var UserSchema = new Schema (
 	{
-		user_id: Number,
-		email: String,
-		mailers: [mailerSchema]
+		user_id: {type:Number, index:true, unique:true},
+		email: {type:String, index:true, unique:true},
+		unique_mailer_id : String,
+		mailer_type : String,
+		mailer_id : String,
+		links: [linkSchema],
+		open_status: openStatusSchema,
+		user_platform: String,
+		user_browser: String,
+		user_location: String
 	}
 );
-module.exports=mongoose.model('User',UserSchema);
+module.exports=UserSchema;

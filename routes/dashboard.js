@@ -6,7 +6,7 @@ router.get('/', function(req, res, next) {
   console.log("hello");
   var config = require("./../config/config")
   var app_ids = config.app_ids;
-  var actionUrl = "http://localhost:5000/dashboard/app"
+  var actionUrl = "http://localhost:5000/dashboard/app";
   res.render(
     'dashboard_apps',
     {

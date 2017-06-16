@@ -3,9 +3,9 @@ var config = require('./../config/mq');
 
 var processMessage = function(message) {
     message = JSON.parse(message.content);
-	var d = require('./../mongo/mongooseinsert');
+	var d = require('./../mongo/mongooseQueries');
     var dbIn =  new d();
-    dbIn.insert(message);
+    dbIn.doQuery(message);
 }
 
 amqp.connect('amqp://' + config.connection.host + ":" + config.connection.port, function(err, conn) {
