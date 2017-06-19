@@ -1,33 +1,42 @@
 var mongoose  = require('mongoose');
 var Schema = mongoose.Schema;
-var linkSchema = new Schema(
-	{
-		sent: [],
-		opened: [{
-			link: String,
-			click_time: Date
-		}]
-	}
-);
-var openStatusSchema = new Schema (
-	{
-		opened : Boolean,
-		sent_time: {type: Date, default: Date.now},
-		open_time: Date
-	}
-);
+var linksObj = {
+									sent: [],
+									opened: [{
+											link: String,
+											click_time: Date
+									}]
+								};
+
+
 
 var UserSchema = new Schema (
 	{
-		user_id: {type:Number, index:true, unique:true},
-		email: {type:String, index:true, unique:true},
-		unique_mailer_id : String,
+		user_id: {type:Number,index:true},
+		email: {type:String, index:true},
+		unique_mailer_id : {type:String, index:true, unique:true},
 		mailer_type : String,
 		mailer_id : String,
-		links: [linkSchema],
-		open_status: openStatusSchema,
-		user_platform: String,
-		user_browser: String,
+		links: linksObj,
+		open_status: {
+			opened : Boolean,
+			sent_time: Date,
+			open_time: Date
+		},
+		user_browser: {
+			name: String,
+			version: String,
+			major_version: String
+		},
+		user_os:{
+			name: String,
+			version: String
+		},
+		user_device:{
+			model: String,
+			vendor: String,
+			device_type: String
+		},
 		user_location: String
 	}
 );
