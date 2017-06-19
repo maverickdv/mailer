@@ -1,42 +1,20 @@
 var mongoose = require('mongoose');
+var UAParser = require('ua-parser-js');
 var config = require('./config');
+var objectSetter = require('./objectSetter');
+//var objSetter = require('./objectSetter');
 
-function setValues(data, newUser) {
-    var clickObj = {
-        "link": data['linkClicked'],
-        "time": data['clickTime']
-    };
-    var linksObj = {
-        "sent": data['linkSent'],
-        "opened": clickObj
-    };
-    var openStatusObj = {
-        "opened": data['mailOpened'],
-        "sent_time": data['mailSentTime'],
-        "open_time": data['mailOpenTime']
-    };
-    newUser.user_id = data['userId'];
-    newUser.email = data['email'];
-    newUser.mailer_type = data['mailerType'];
-    newUser.unique_mailer_id = data['uniMailId'];
-    newUser.mailer_id = data['mailerId'];
-    newUser.links = linksObj;
-    newUser.open_status = openStatusObj;
-    newUser.user_platform = data['userPlatform'];
-    newUser.user_browser = data['userBrowser'];
-    newUser.user_location = data['userLocation'];
+
+function setValuesForInsert(data, newUser) {
+    var objSetter = new objectSetter();
+    newUser = objSetter.setUserData(data, newUser);
+    var mailIdData = decodeMailerIdString(data['uniMailId']);
+    data['mailSentTime'] = mailIdData['sentTime'];
+    newUser = objSetter.setOpenStatusObj(data,newUser);
     return newUser;
 }
-function getCurrentDateTime(){
-    var currentdate = new Date();
-    var dateTime = currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/"
-                + currentdate.getFullYear() + " @ "
-                + currentdate.getHours() + ":"
-                + currentdate.getMinutes() + ":"
-                + currentdate.getSeconds();
-    return dateTime;
-}
+
+
 function createConection(dbName){
     var dbConnUrl = 'mongodb://'+config.dbConn.host+":"+config.dbConn.port;
     dbConnUrl += '/'+dbName;
@@ -52,22 +30,22 @@ function insert(message){
     var conn = createConection(message['appId']);
     var UserSchema = require('./usermodel');
     var usermodel = conn.model('user',UserSchema);
-    var mailIdData = decodeMailerIdString(message['uniMailId']);
-    message['mailSentTime'] = mailIdData['sentTime'];
     var newUser = new usermodel();
-    newUser = setValues(message,newUser);
+    newUser = setValuesForInsert(message,newUser);
     console.log(JSON.stringify(newUser));
     try {
         newUser.save(function(err) {
-        if (err) throw err;
-            console.log('User created!');
+        if (err){
+           console.log("User could not be added because of "+err);
+         }
+         console.log('User created!');
         });
     }
     catch(e){
-        console.log(e);
         console.log("some error came in saving");
     }
 };
+
 function decodeMailerIdString(mailIdData){
     mailIdData = decodeURI(mailIdData);
     if (typeof Buffer.from === "function") {
@@ -83,24 +61,83 @@ function decodeMailerIdString(mailIdData){
     var mailerData = {};
     mailerData['appId'] = arrMailIdData[0];
     mailerData['userId'] = arrMailIdData[1];
-    mailerData['mailerId'] = arrMailIdData[2];
+    mailerData['mailerType'] = arrMailIdData[2];
     mailerData['sentTime'] = new Date(1000*arrMailIdData[3]);
     return mailerData;
 }
 
-function openRateInsert(mailerData){
-    var mailIdData = decodeMailerIdString(mailerData['uniMailId']);
-
+function setValuesforOpenRate(data,newUser){
+  var mailIdData = decodeMailerIdString(data['mailId']);
+  var objSetter = new objectSetter();
+  newUser = objSetter.setUserData(mailIdData,newUser);
+  var userAgentData = parseClientBrowser(data['userAgent']);
+  newUser = objSetter.setBrowserPlatforms(userAgentData,newUser);
+  newUser = objSetter.setUserLocation(data['ip'],newUser);
+  var openData = {};
+  openData['mailOpened'] = 1;
+  openData['mailOpenTime'] = new Date();
+  openData['mailSentTime'] = mailIdData['sentTime'];
+  newUser = objSetter.setOpenStatusObj(openData,newUser);
+  return newUser;
 }
+
+function openRateInsert(mailerData){
+  var tempUser = {};
+  tempUser = setValuesforOpenRate(mailerData,tempUser);
+  var conn = createConection(tempUser['appId']);
+  var UserSchema = require('./usermodel');
+  var usermodel = conn.model('user',UserSchema);
+  usermodel.update({"user_id":1847},tempUser,function(err,raw){
+    if(err){
+      console.log(err);
+    }
+    else{
+      console.log(raw);
+    }
+  }
+  );
+}
+function setValuesforClicks(data,newUser){
+  var mailIdData = decodeMailerIdString(data['mailId']);
+  var objSetter = new objectSetter();
+  newUser = objSetter.setUserData(mailIdData,newUser);
+  var userAgentData = parseClientBrowser(data['userAgent']);
+  newUser = objSetter.setBrowserPlatforms(userAgentData,newUser);
+  newUser = objSetter.setUserLocation(data['ip'],newUser);
+  var openData = {};
+  openData['mailOpened'] = 1;
+  openData['mailOpenTime'] = new Date();
+  openData['mailSentTime'] = mailIdData['sentTime'];
+  newUser = objSetter.setOpenStatusObj(openData,newUser);
+  var clickData = {};
+  clickData['linkClicked'] = data['url'];
+  clickData['clickTime'] = new Date();
+  newUser = objSetter.setClickObj(clickData,newUser);
+  return newUser;
+}
+
 
 function clicksInsert(mailerData){
-    var mailIdData = decodeMailerIdString(mailerData['uniMailId']);
-
+  var tempUser = {};
+  tempUser = setValuesforClicks(mailerData,tempUser);
+  var conn = createConection(tempUser['appId']);
+  var UserSchema = require('./usermodel');
+  var usermodel = conn.model('user',UserSchema);
+  usermodel.update({"user_id":tempUser['user_id']},tempUser,function(err,raw){
+    if(err){
+      console.log(err);
+    }
+    else{
+      console.log(raw);
+    }
+  }
+  );
 
 }
 
-function getDataFromMailerId(mailerIdData){
-
+function parseClientBrowser(userAgent){
+  var parser = new UAParser();
+  return parser.setUA(userAgent).getResult();
 }
 
 function dbActions() {
