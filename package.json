@@ -1,0 +1,32 @@
+{
+  "name": "mailer",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "amqplib": "^0.5.1",
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "hi-base32": "^0.2.0",
+    "jade": "~1.11.0",
+    "mongoose": "4.1.9",
+    "morgan": "~1.8.1",
+    "mysql": "^2.13.0",
+    "serve-favicon": "~2.4.2",
+    "ua-parser-js": "^0.7.12",
+    "winston": "^2.3.1"
+  },
+  "main": "app.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "http://gitlab.infoedge.com/varun.vats/mailer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
